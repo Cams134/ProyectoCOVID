@@ -16,5 +16,10 @@ class registros(models.Model):
 
     def publish(self):
         self.save()
-        return (self.dia, self.covid, self.sintomas)
 
+class algun_modelo_de_la_base_de_datos(models.Model):
+    nombre = models.CharField(max_length=30)
+    edad = models.CharField(max_length=3)
+
+    def publish(self):
+        self.save()

@@ -19,11 +19,11 @@
 <div class="row">
   <div class="col s7 offset-s3">
     <div class="card blue lighten-5">
-      <form id="form1" action="{% url 'registro' %}" method="POST">
+      <form id="form1" action="./" method="POST">
         {% csrf_token %}
         <h6 style="text-align: center">Ingrese la fecha</h6>
         <input type="text" class="datepicker" name = "fecha">
-          <form action="# {% url 'registro' %}" id="form1" method="POST"></form>
+          <form action="./" id="form1" method="POST"></form>
           <h6 style="text-align: center">¿Qué resultado tuvo el test para COVID-19 del paciente?</h6>
             <div class="input-field col s12">
               <select id="covid" name="covid">

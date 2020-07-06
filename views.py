@@ -1,22 +1,9 @@
-from django.shortcuts import render, HttpResponse, redirect
-from django.contrib.auth import authenticate
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.contrib.auth import login as do_login
-from django.contrib.auth import logout as do_logout
-from .models import registros
-from .forms import registrosForm
-
-
+from django.shortcuts import render, redirect
+from .models import registros, algun_modelo_de_la_base_de_datos
 
 def registro(request):
-    form = registrosForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        context= {'form': form }
-        
-        return render(request, 'registro.html', context)
-   
-    if request.POST:
+
+    if request.method == 'POST':
         covidd = request.POST.get('covidd','')
         habituales = request.POST.get('habituales', '')
         menos = request.POST.get('menos', '')
@@ -45,43 +32,33 @@ def estadistica(request):
     return render(request, 'estadistica.html')
 
 
-# Lo de Agustin
 
-def index(request):
-    if request.user.is_authenticated:
-        return render(request, "index.html")
-    return redirect('/login')
+def formulario(request):
+  if request.method == "POST":
+    nombre = request.POST.get('nombre','')
+    edad = request.POST.get('edad','')
 
+    if(nombre != '' and edad != ''): 
+      #Esto pasa si el usuario si completa toda la informacion
+      edad = int(edad) #convertimos la edad de string a interger para poder hacer operaciones                                      matematicas si queremos
 
-def register(request):
-    form = UserCreationForm()
-    if request.method == "POST":
-        form = UserCreationForm(data=request.POST)
-        if form.is_valid():
-            user = form.save()
-            if user is not None:
-                do_login(request, user)
-                return redirect('/')
-    form.fields['username'].help_text = None
-    form.fields['password1'].help_text = None
-    form.fields['password2'].help_text = None
-    return render(request, "register.html", {'form': form})
+      if(edad >= 18):
+        #esto pasa si el usurio es mayor de edad
 
+        nuevo_registro = algun_modelo_de_la_base_de_datos() #importamos el modelo                                                                                                                "vacio"
+        nuevo_registro.nombre = nombre #llenamos del nuevo registro
+        nuevo_registro.edad = edad
+        nuevo_registro.save() #guardamos el registro en la base de datos del modelo                                                               correspondiente
 
-def login(request):
-    form = AuthenticationForm()
-    if request.method == "POST":
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                do_login(request, user)
-                return redirect('/')
-    return render(request, "login.html", {'form': form})
+        return redirect('estadistica.html')
 
+      else:
+        #esto pasa si el usuario es menor de edad
+        return redirect('estadistica.html')
 
-def logout(request):
-    do_logout(request)
-    return redirect('/')
+    else:
+      #Esto pasa si es usuario no completa toda la informacion del formulario
+      return redirect('estadistica.html')
+
+  else:
+    return render(request, 'formulario.html')
